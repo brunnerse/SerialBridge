@@ -1,0 +1,27 @@
+#include "hardware/uart.h"
+
+#cmakedefine UART_BAUDRATE @UART_BAUDRATE@
+#cmakedefine UART_DATABITS @UART_DATABITS@
+#cmakedefine UART_PARITY @UART_PARITY@
+#cmakedefine UART_STOPBITS @UART_STOPBITS@
+
+// Apply default values
+#ifndef UART_BAUDRATE
+#define UART_BAUDRATE 230400
+#endif
+
+#ifndef UART_DATABITS
+#define UART_DATABITS 8
+#endif
+
+#ifndef UART_STOPBITS
+#define UART_STOPBITS 1
+#endif
+
+// (Re)define parity with type uart_parity_t
+#ifdef UART_PARITY
+    #undef UART_PARITY
+    #define UART_PARITY uart_parity_t::UART_PARITY_@UART_PARITY@
+#else
+    #define UART_PARITY uart_parity_t::UART_PARITY_NONE
+#endif
