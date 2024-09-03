@@ -93,20 +93,28 @@ int main() {
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
     uart_init(uart_inst, UART_BAUDRATE);
-    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, UART_PARITY);
+    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, PARITY_T(UART_PARITY));
 
 
 #if LED_BLINK_DURATION > 0
     led_init(LED_PIN);
-    led_put(LED_PIN, 1);
-    sleep_ms(500);
+    for (uint32_t i = 0; i < 3; i++) {
+        led_put(LED_PIN, 1);
+        sleep_ms(250);
+        led_put(LED_PIN, 0);
+        sleep_ms(250);
+    }
     led_put(LED_PIN, 0);
 #endif
 
-    // Launch core1 task which forwards uart input to serial output
+    // Print status info
+    printf("\r\n============\r\n< Baudrate: %s, Parity: %s, Stopbits: %s >\r\n============\r\n",
+        STR(UART_BAUDRATE), STR(UART_PARITY), STR(UART_STOPBITS));
+
+    // Launch core 1 task which forwards uart input to serial output
     multicore_launch_core1(core1task);
 
-    // On core 0, forward serial output to uart input and handle LED blinking 
+    // On core 0, forward serial output to uart input and handle LED blinking
     for (;;) {
         serial2uart();
 #if LED_BLINK_DURATION > 0

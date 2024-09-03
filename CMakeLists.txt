@@ -31,7 +31,8 @@ add_executable(SerialUartBridge
         src/SerialUartBridge.cpp
 )
 
-target_include_directories(SerialUartBridge PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
+target_include_directories(SerialUartBridge PRIVATE 
+	${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
 target_compile_options(SerialUartBridge PRIVATE
 	-DWAIT_FOR_NEWLINE=${UART_SERIAL_WAIT_FOR_NEWLINE}

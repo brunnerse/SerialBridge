@@ -16,7 +16,7 @@ target_compile_options(uartMirror PRIVATE
 )
 
 target_include_directories(uartMirror PRIVATE 
-	${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
+	${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
 
 if (UART_MIRROR_USE_STDIO)

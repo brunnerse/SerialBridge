@@ -22,11 +22,13 @@
 #define UART_STOPBITS 1
 #endif
 
-// (Re)define parity with type uart_parity_t
-#ifdef UART_PARITY
-    #undef UART_PARITY
-    #define UART_PARITY uart_parity_t::UART_PARITY_@UART_PARITY@
-#else
-    #define UART_PARITY uart_parity_t::UART_PARITY_NONE
+#ifndef UART_PARITY
+#define UART_PARITY NONE
 #endif
 
+// Helper macros
+#define XPARITY_T(parity) (uart_parity_t::UART_PARITY_##parity)
+#define PARITY_T(parity) XPARITY_T(parity) 
+
+#define XSTR(x) #x
+#define STR(s) XSTR(s) 

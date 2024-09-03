@@ -89,7 +89,7 @@ int main() {
 
     uart_init(uart_inst, UART_BAUDRATE);
     uart_init(uart_inst, UART_BAUDRATE);
-    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, UART_PARITY);
+    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, PARITY_T(UART_PARITY));
     uart_set_translate_crlf(uart_inst, false);
 #endif
 
