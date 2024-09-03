@@ -53,7 +53,21 @@ void uart2serial() {
     static uint32_t idx = 0;
 #endif
 
-    if (uart_is_readable_within_us(uart_inst, 100)) {
+
+    // Check for errors
+    io_rw_32 rsr = uart_get_hw(uart_inst)->rsr;
+    if (rsr != 0) {
+        printf("[UART RX ERROR: %s %s %s %s]\r\n",
+            (rsr & UART_UARTRSR_OE_BITS) ? "Overrun" : "",
+            (rsr & UART_UARTRSR_BE_BITS) ? "Break" : "",
+            (rsr & UART_UARTRSR_PE_BITS) ? "Parity" : "",
+            (rsr & UART_UARTRSR_FE_BITS) ? "Framing" : ""
+        );
+        // Clear RSR register by writing bits back
+        uart_get_hw(uart_inst)->rsr = rsr;
+    } 
+
+    if (uart_is_readable(uart_inst)) {
         char c = uart_getc(uart_inst);
 #if WAIT_FOR_NEWLINE
         buffer[idx++] = c;
