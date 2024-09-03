@@ -17,9 +17,6 @@
 #endif
 
 
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
-
 #if WAIT_FOR_NEWLINE
 #define BUFFER_SIZE 512
 #endif
@@ -40,11 +37,11 @@ void serial2uart() {
         buffer[idx++] = (char)c;
         if (c == '\n' || idx >= BUFFER_SIZE) {
             for (uint32_t i = 0; i < idx; i++)
-                uart_putc_raw(uart0, (char)buffer[i]);
+                uart_putc_raw(uart_inst, (char)buffer[i]);
             idx = 0;
         }
 #else
-        uart_putc_raw(uart0, (char)c);
+        uart_putc_raw(uart_inst, (char)c);
 #endif
         lastRecvTime = time_us_64(); 
     }
@@ -56,8 +53,8 @@ void uart2serial() {
     static uint32_t idx = 0;
 #endif
 
-    if (uart_is_readable_within_us(uart0, 100)) {
-        char c = uart_getc(uart0);
+    if (uart_is_readable_within_us(uart_inst, 100)) {
+        char c = uart_getc(uart_inst);
 #if WAIT_FOR_NEWLINE
         buffer[idx++] = c;
         if (c == '\n' || idx >= BUFFER_SIZE) {
@@ -92,11 +89,11 @@ void handleBlink() {
 int main() {
     stdio_init_all();
 
-    gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
-    gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    uart_init(uart0, UART_BAUDRATE);
-    uart_set_format(uart0, UART_DATABITS, UART_STOPBITS, UART_PARITY);
+    uart_init(uart_inst, UART_BAUDRATE);
+    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, UART_PARITY);
 
 
 #if LED_BLINK_DURATION > 0

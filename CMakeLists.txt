@@ -1,17 +1,15 @@
 cmake_minimum_required(VERSION 3.12)
 
-
-#include build functions from Pico SDK
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
-
-project(SerialBridge C CXX)
-
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wall)
 
-
+#include build functions from Pico SDK
 set(PICO_BOARD "pico")
+include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+
+project(SerialBridge C CXX)
+
 
 # UART Configuration
 set(UART_BAUDRATE 57600)
@@ -23,10 +21,12 @@ configure_file(cfg/uartConfig.h.in cfg/uartConfig.h)
 
 set (UART_SERIAL_WAIT_FOR_NEWLINE 0)
 
+
 # Creates a pico-sdk subdirectory in our project for the libraries
 pico_sdk_init()
 
-# point out the CMake, where to find the executable source file
+
+# Add executables 
 add_executable(SerialUartBridge
         src/SerialUartBridge.cpp
 )
@@ -38,7 +38,7 @@ target_compile_options(SerialUartBridge PRIVATE
 )
 
 pico_enable_stdio_usb(SerialUartBridge 1)
-pico_enable_stdio_uart(SerialUartBridge 0)
+#pico_enable_stdio_uart(SerialUartBridge 0)
 
 # create map/bin/hex/uf2 files.
 pico_add_extra_outputs(SerialUartBridge)
