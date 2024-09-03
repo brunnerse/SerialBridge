@@ -6,8 +6,6 @@
 #include "cfg/uartConfig.h"
 #include "hw/led.h"
 
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
 
 #if USE_STDIO == 1
     #include <stdio.h>
@@ -50,7 +48,9 @@ void send(const char* buffer)
 //    puts_raw(buffer);
       printf("%s%s%s", PRE_STR, buffer, POST_STR);
 #else
-    uart_puts(uart0, buffer);
+    uart_puts(uart_inst, PRE_STR);
+    uart_puts(uart_inst, buffer);
+    uart_puts(uart_inst, POST_STR);
 #endif
 }
 
@@ -59,9 +59,9 @@ void send(const char c)
 #if USE_STDIO
     printf("%s%c%s", PRE_STR, c, POST_STR);
 #else
-    uart_puts(uart0, PRE_STR);
-    uart_putc_raw(uart0, c);
-    uart_puts(uart0, POST_STR);
+    uart_puts(uart_inst, PRE_STR);
+    uart_putc_raw(uart_inst, c);
+    uart_puts(uart_inst, POST_STR);
 #endif
 }
 
@@ -69,7 +69,7 @@ void send_raw(const char c) {
 #if USE_STDIO
     putchar(c);
 #else
-    uart_putc_raw(uart0, c);
+    uart_putc_raw(uart_inst, c);
 #endif
 }
 
@@ -81,16 +81,16 @@ int main() {
     //stdio_init_all();
     // while (!stdio_usb_connected())
     //    sleep_ms(100);
-    stdio_uart_init_full(uart0, UART0_BAUDRATE, UART0_TX_PIN, UART0_RX_PIN);
-    uart_set_format(uart0, UART_DATABITS, UART_STOPBITS, UART_PARITY);
+    stdio_uart_init_full(uart_inst, UART0_BAUDRATE, UART_TX_PIN, UART_RX_PIN);
+    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, UART_PARITY);
 #else
-    gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
-    gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
 
-    uart_init(uart0, UART_BAUDRATE);
-    uart_init(uart0, UART_BAUDRATE);
-    uart_set_format(uart0, UART_DATABITS, UART_STOPBITS, UART_PARITY);
-    uart_set_translate_crlf(uart0, false);
+    uart_init(uart_inst, UART_BAUDRATE);
+    uart_init(uart_inst, UART_BAUDRATE);
+    uart_set_format(uart_inst, UART_DATABITS, UART_STOPBITS, UART_PARITY);
+    uart_set_translate_crlf(uart_inst, false);
 #endif
 
     led_init(LED_PIN);
@@ -120,8 +120,8 @@ int main() {
         if (cVal != PICO_ERROR_TIMEOUT) {
             char c = (char)cVal;
 #else
-        if (uart_is_readable_within_us(uart0, 100)) {
-            char c = uart_getc(uart0);
+        if (uart_is_readable_within_us(uart_inst, 100)) {
+            char c = uart_getc(uart_inst);
 #endif
             lastRecvTime = time_us_64();
             led_put(LED_PIN, 1);
@@ -139,7 +139,7 @@ int main() {
                 send(sendBuffer);
                 lastSendTime = time_us_64();
                 bufIdx = 0;
-            }
+            } 
 #else
 #if CONVERT_CRLF
             if (c == '\r' || c == '\n') {
